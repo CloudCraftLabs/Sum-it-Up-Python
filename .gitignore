@@ -1,0 +1,30 @@
+# Ignore Python bytecode files
+*.pyc
+
+# Ignore the __pycache__ directory
+__pycache__/
+.pytest_cache
+
+# Ignore environment variables
+.env
+
+# Ignore log files
+*.log
+temp/logs/*
+
+# Ignore temporary test files
+test_*.py
+
+# Ignore venv folder
+venv
+venv/*
+
+migrations
+migrations/*
+alembic.ini
+
+src/config/database/json
+
+*.cpython-37.pyc
+*.DS_Store
+
