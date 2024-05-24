@@ -1,3 +1,4 @@
+import gzip
 import hashlib
 import json
 from fastapi import Depends
@@ -50,3 +51,12 @@ async def detect_intent(text: str):
 
   doc = nlp(text)
   return get_intent(doc)
+
+
+async def compress_and_store(text: str):
+    """Compresses text compressed with gzip (client-side or server-side)."""
+    return gzip.compress(text.encode("utf-8"))
+
+def decompress_text(compressed_text):
+    """Decompresses text compressed with gzip (client-side or server-side)."""
+    return gzip.decompress(compressed_text).decode("utf-8")

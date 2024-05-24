@@ -4,11 +4,11 @@ from sqlalchemy.exc import SQLAlchemyError
 from src.config.database.database import Base
 
 from fastapi_sqlalchemy import db
-from sqlalchemy import CHAR, Column, Date, DateTime, Enum, Float, DECIMAL, ForeignKey, LargeBinary, String, TIMESTAMP, Table, Text, text
+from sqlalchemy import CHAR, Column, Date, DateTime, Enum, Float, DECIMAL, ForeignKey, LargeBinary, String, TIMESTAMP, \
+    Table, Text, text, BLOB
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.mysql import ENUM, BIGINT, INTEGER, LONGBLOB, LONGTEXT, MEDIUMTEXT, TINYINT, VARCHAR, JSON
 from sqlalchemy.sql.sqltypes import Integer
-
 
 
 class UrlSummaryHistory(Base):
@@ -16,12 +16,11 @@ class UrlSummaryHistory(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     url = Column(String(255), nullable=False)
-    response_text = Column(Text)
+    response_text = Column(BLOB)
     created_datetime = Column(TIMESTAMP, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
-    summary_type = Column(Enum('factual','keywords','abstractive'))
+    summary_type = Column(Enum('factual', 'keywords', 'abstractive'))
 
-    
-    
+
 class FlowchartSummaryHistory(Base):
     __tablename__ = 'flowchart_summary_history'
 
