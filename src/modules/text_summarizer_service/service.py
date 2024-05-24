@@ -1,4 +1,4 @@
-from fastapi import BackgroundTasks, Body, Depends, Request, Form, File
+from fastapi import BackgroundTasks, Body, Depends, Request, Form
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from src.modules.text_summarizer_service.module import create_db_entry_for_flowchart, \
