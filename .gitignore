@@ -27,4 +27,4 @@ src/config/database/json
 
 *.cpython-37.pyc
 *.DS_Store
-
+.idea
