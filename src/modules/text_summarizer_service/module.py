@@ -7,7 +7,7 @@ from src.config.database.database import get_db
 import google.generativeai as genai
 from sqlalchemy.orm import Session
 from src.utils.common.record_audits import record_audit
-from gtts import gTTS
+# from gtts import gTTS
 import playsound
 import asyncio
 from src.utils.common.constants import flowchart_task_mapper, search_about_task_mapper, text_task_mapper, \

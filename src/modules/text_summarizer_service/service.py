@@ -156,15 +156,15 @@ async def download_pdf(request: Request, text: str = Form(...), db: Session = De
         return try_except_err_response(message=message)
 
 
-async def text_to_speech_service(background_tasks: BackgroundTasks, request: Request, data: dict,
-                                 db: Session = Depends(get_db)):
-    try:
-        text = data.get("text")
-        return await text_to_speech(text, background_tasks)
-
-    except Exception:
-        message = exception_handler(module='text_summarizer', func='DownloadPDF', main_db=db, request=request)
-        return try_except_err_response(message=message)
+# async def text_to_speech_service(background_tasks: BackgroundTasks, request: Request, data: dict,
+#                                  db: Session = Depends(get_db)):
+#     try:
+#         text = data.get("text")
+#         return await text_to_speech(text, background_tasks)
+#
+#     except Exception:
+#         message = exception_handler(module='text_summarizer', func='DownloadPDF', main_db=db, request=request)
+#         return try_except_err_response(message=message)
 
 
 async def search_about_service(request: Request, data: dict, db: Session = Depends(get_db)):
