@@ -2,7 +2,7 @@ from fastapi import BackgroundTasks, Body, Depends, Request, Form
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from src.modules.text_summarizer_service.module import create_db_entry_for_flowchart, \
-    create_db_entry_for_url, generate_text_summary_via_url_or_text, search_about, text_to_speech
+    create_db_entry_for_url, generate_text_summary_via_url_or_text, search_about
 from src.config.database.database import get_db
 from src.utils.common.responses.handlers.http_exceptions import exception_handler
 from src.utils.common.responses.response import response, try_except_err_response
