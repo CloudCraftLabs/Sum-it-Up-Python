@@ -124,7 +124,7 @@ portalocker==2.7.0
 preshed==3.0.9
 prompt-toolkit==3.0.38
 proto-plus==1.23.0
-protobuf==4.25.3
+protobuf==3.20.0
 ptyprocess==0.7.0
 pure-eval==0.2.2
 pusher==3.1.0
