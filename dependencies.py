@@ -138,7 +138,7 @@ pylint==2.4.4
 PyMySQL==0.9.3
 PyNaCl==1.4.0
 pyobjc==9.0.1
-pyobjc-core==9.0.1
+pyobjc-core
 pyobjc-framework-Accessibility==9.0.1
 pyobjc-framework-Accounts==9.0.1
 pyobjc-framework-AddressBook==9.0.1
