@@ -5,8 +5,7 @@ pipeline {
         AWS_REGION = 'ap-south-1'  // Set your AWS region
         FUNCTION_NAME = 'sum-it-up'  // AWS Lambda function name
         REPO_URL = 'https://github.com/CloudCraftLabs/Sum-it-Up-Python.git'  // GitHub repository
-        PYTHON_VERSION = 'python3.9' //Python version
-        VENV_DIR = 'venv'
+        PYTHON_VERSION = 'python3.11' //Python version
     }
 
     stages {
@@ -16,11 +15,10 @@ pipeline {
             }
         }
 
-      stage('Check Python Version') {
+        stage('Set Up Python 3.11') {
             steps {
                 script {
-                    sh 'which python3.9 || echo "Python 3.9 is not installed!"'
-                    sh 'python3.9 --version || exit 1'  // Fail if Python 3.9 is missing
+                    sh 'sudo apt update && sudo apt install -y python3.11 python3.11-venv'
                 }
             }
         }
