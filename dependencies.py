@@ -105,7 +105,7 @@ msal==1.23.0
 msal-extensions==1.0.0
 multidict==6.0.4
 murmurhash==1.0.10
-mysql-connector-python==8.0.32
+# mysql-connector-python==8.0.32
 ndg-httpsclient==0.5.1
 numpy==1.26.3
 openpyxl==3.1.2
@@ -124,7 +124,7 @@ portalocker==2.7.0
 preshed==3.0.9
 prompt-toolkit==3.0.38
 proto-plus==1.23.0
-protobuf==4.21.6
+protobuf==4.25.3
 ptyprocess==0.7.0
 pure-eval==0.2.2
 pusher==3.1.0
