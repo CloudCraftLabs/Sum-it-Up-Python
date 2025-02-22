@@ -1,25 +1,18 @@
 pipeline {
     agent any
-
+    
     environment {
-        AWS_REGION = 'ap-south-1'  // Set your AWS region
-        FUNCTION_NAME = 'sum-it-up'  // AWS Lambda function name
-        REPO_URL = 'https://github.com/CloudCraftLabs/Sum-it-Up-Python.git'  // GitHub repository
-        PYTHON_VERSION = 'python3.11' //Python version
+        AWS_REGION = 'us-east-1'
+        FUNCTION_NAME = 'sum-it-up-lambda'
+        VENV_DIR = 'venv'
+        PYTHON_VERSION = 'python3.11'
     }
 
     stages {
+        
         stage('Checkout Code') {
             steps {
-                git branch: 'master', url: "${REPO_URL}"
-            }
-        }
-
-        stage('Set Up Python 3.11') {
-            steps {
-                script {
-                    sh 'sudo apt update && sudo apt install -y python3.11 python3.11-venv'
-                }
+                git branch: 'main', url: 'https://github.com/CloudCraftLabs/Sum-it-Up-Python.git'
             }
         }
 
@@ -27,15 +20,18 @@ pipeline {
             steps {
                 script {
                     sh '${PYTHON_VERSION} -m venv ${VENV_DIR}'
-                    sh 'source ${VENV_DIR}/bin/activate'
                 }
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Activate Virtual Environment & Install Dependencies') {
             steps {
                 script {
-                    sh 'source ${VENV_DIR}/bin/activate && pip install -r requirements.txt'
+                    sh '''
+                    source ${VENV_DIR}/bin/activate
+                    pip install --upgrade pip
+                    pip install -r requirements.txt
+                    '''
                 }
             }
         }
@@ -43,7 +39,10 @@ pipeline {
         stage('Package Lambda Function') {
             steps {
                 script {
-                    sh 'cd ${WORKSPACE} && zip -r function.zip *'
+                    sh '''
+                    source ${VENV_DIR}/bin/activate
+                    cd ${WORKSPACE} && zip -r function.zip *
+                    '''
                 }
             }
         }
@@ -57,7 +56,6 @@ pipeline {
                 }
             }
         }
-
     }
 
     post {
