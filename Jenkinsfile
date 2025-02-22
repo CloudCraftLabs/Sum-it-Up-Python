@@ -6,6 +6,7 @@ pipeline {
         FUNCTION_NAME = 'sum-it-up'  // AWS Lambda function name
         REPO_URL = 'https://github.com/CloudCraftLabs/Sum-it-Up-Python.git'  // GitHub repository
         PYTHON_VERSION = 'python3.9' //Python version
+        VENV_DIR = 'venv'
     }
 
     stages {
@@ -15,10 +16,11 @@ pipeline {
             }
         }
 
-        stage('Set Up Python 3.11') {
+      stage('Check Python Version') {
             steps {
                 script {
-                    sh 'sudo apt update && sudo apt install -y python3.9 python3.9-venv'
+                    sh 'which python3.9 || echo "Python 3.9 is not installed!"'
+                    sh 'python3.9 --version || exit 1'  // Fail if Python 3.9 is missing
                 }
             }
         }
