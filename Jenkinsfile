@@ -16,7 +16,7 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'pip install -r dependencies.py -t .'
+                sh 'python3 -m pip install -r dependencies.py -t .'
             }
         }
 
