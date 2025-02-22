@@ -5,7 +5,7 @@ pipeline {
         AWS_REGION = 'ap-south-1'
         FUNCTION_NAME = 'sum-it-up'
         VENV_DIR = 'venv'
-        PYTHON_VERSION = 'python3.11'
+       PYTHON_BIN = '/opt/homebrew/bin/python3.11'  
     }
 
     stages {
@@ -19,7 +19,7 @@ pipeline {
         stage('Create Virtual Environment') {
             steps {
                 script {
-                    sh '${PYTHON_VERSION} -m venv ${VENV_DIR}'
+                    sh '${PYTHON_BIN} -m venv ${VENV_DIR}'
                 }
             }
         }
