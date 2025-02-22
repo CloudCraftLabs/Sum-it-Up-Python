@@ -18,7 +18,7 @@ pipeline {
         stage('Set Up Python 3.11') {
             steps {
                 script {
-                    sh 'sudo apt update && sudo apt install -y python3.11 python3.11-venv'
+                    sh 'sudo apt update && sudo apt install -y python3.9 python3.9-venv'
                 }
             }
         }
