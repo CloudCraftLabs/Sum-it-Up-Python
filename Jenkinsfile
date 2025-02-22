@@ -5,6 +5,7 @@ pipeline {
         AWS_REGION = 'ap-south-1'  // Set your AWS region
         FUNCTION_NAME = 'sum-it-up'  // AWS Lambda function name
         REPO_URL = 'https://github.com/CloudCraftLabs/Sum-it-Up-Python.git'  // GitHub repository
+        PYTHON_VERSION = 'python3.11' //Python version
     }
 
     stages {
@@ -14,15 +15,36 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Set Up Python 3.11') {
             steps {
-                sh 'python3 -m pip install -r dependencies.py -t .'
+                script {
+                    sh 'sudo apt update && sudo apt install -y python3.11 python3.11-venv'
+                }
             }
         }
 
-        stage('Package Code') {
+        stage('Create Virtual Environment') {
             steps {
-                sh 'zip -r function.zip . -x "*.git*"'
+                script {
+                    sh '${PYTHON_VERSION} -m venv ${VENV_DIR}'
+                    sh 'source ${VENV_DIR}/bin/activate'
+                }
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    sh 'source ${VENV_DIR}/bin/activate && pip install -r requirements.txt'
+                }
+            }
+        }
+
+        stage('Package Lambda Function') {
+            steps {
+                script {
+                    sh 'cd ${WORKSPACE} && zip -r function.zip *'
+                }
             }
         }
 
@@ -30,25 +52,20 @@ pipeline {
             steps {
                 withAWS(credentials: 'aws-credentials-id', region: "${AWS_REGION}") {
                     sh '''
-                    aws lambda update-function-code --function-name $FUNCTION_NAME --zip-file fileb://function.zip --region $AWS_REGION
+                    aws lambda update-function-code --function-name ${FUNCTION_NAME} --zip-file fileb://function.zip --region ${AWS_REGION}
                     '''
                 }
             }
         }
 
-        stage('Clean Workspace') {
-            steps {
-                cleanWs()
-            }
-        }
     }
 
     post {
         success {
-            echo "Deployment to AWS Lambda was successful!"
+            echo 'Deployment successful!'
         }
         failure {
-            echo "Deployment failed. Check logs for details."
+            echo 'Deployment failed!'
         }
     }
 }
