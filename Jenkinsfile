@@ -5,7 +5,7 @@ pipeline {
         AWS_REGION = 'ap-south-1'  // Set your AWS region
         FUNCTION_NAME = 'sum-it-up'  // AWS Lambda function name
         REPO_URL = 'https://github.com/CloudCraftLabs/Sum-it-Up-Python.git'  // GitHub repository
-        PYTHON_VERSION = 'python3.11' //Python version
+        PYTHON_VERSION = 'python3.9' //Python version
     }
 
     stages {
