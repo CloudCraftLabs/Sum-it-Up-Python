@@ -2,8 +2,8 @@ pipeline {
     agent any
     
     environment {
-        AWS_REGION = 'us-east-1'
-        FUNCTION_NAME = 'sum-it-up-lambda'
+        AWS_REGION = 'ap-south-1'
+        FUNCTION_NAME = 'sum-it-up'
         VENV_DIR = 'venv'
         PYTHON_VERSION = 'python3.11'
     }
@@ -12,7 +12,7 @@ pipeline {
         
         stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/CloudCraftLabs/Sum-it-Up-Python.git'
+                git branch: 'master', url: 'https://github.com/CloudCraftLabs/Sum-it-Up-Python.git'
             }
         }
 
