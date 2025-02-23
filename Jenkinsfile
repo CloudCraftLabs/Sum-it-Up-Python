@@ -6,7 +6,9 @@ pipeline {
         FUNCTION_NAME = 'sum-it-up' //AWS Lambda Func name
         VENV_DIR = 'venv' //Virtual env name
        PYTHON_BIN = '/opt/homebrew/bin/python3.11'  //locall path for python 3.11
+        AWS_CLI = '/opt/homebrew/bin/aws' //AWS CLI path
         TIMESTAMP = new Date().format("yyyyMMdd-HHmmss", TimeZone.getTimeZone("UTC")) //Timestamp
+        LAYER_NAME = 'sum-it-up-layer' //AWS Lambda Layer name
     }
 
     stages {
@@ -31,7 +33,30 @@ pipeline {
                     sh '''
                     source ${VENV_DIR}/bin/activate
                     pip install --upgrade pip
-                    pip install -r dependencies.py
+                    pip install -r requirements.txt
+                    '''
+                }
+            }
+        }
+
+        stage('Package Lambda Layer') {
+            steps {
+                script {
+                    sh '''
+                    mkdir -p python/lib/python3.11/site-packages
+                    cp -r ${VENV_DIR}/lib/python3.11/site-packages/* python/lib/python3.11/site-packages/
+                    zip -r layer.zip python
+                    '''
+                }
+            }
+        }
+
+        stage('Upload Lambda Layer') {
+            steps {
+                script {
+                    sh '''
+                    LAYER_VERSION=$(${AWS_CLI} lambda publish-layer-version --layer-name ${LAYER_NAME} --zip-file fileb://layer.zip --compatible-runtimes python3.11 --query Version --output text)
+                    echo "LAYER_VERSION=$LAYER_VERSION" > layer_version.txt
                     '''
                 }
             }
@@ -42,43 +67,50 @@ pipeline {
                 script {
                     sh '''
                     source ${VENV_DIR}/bin/activate
-                    cd ${WORKSPACE} && zip -r function.zip *
+                    zip -r function.zip *
                     '''
                 }
             }
         }
 
-        stage('Deploy to AWS Lambda') {
-            steps {
-                withAWS(credentials: 'aws-credentials-id', region: "${AWS_REGION}") {
-                    sh '''
-                    aws lambda update-function-code --function-name ${FUNCTION_NAME} --zip-file fileb://function.zip --region ${AWS_REGION}
-                    '''
-                }
-            }
-        }
-
-        stage('Publish New Version') {
+        stage('Deploy Lambda Function') {
             steps {
                 script {
                     sh '''
-                    LAMBDA_VERSION=$(aws lambda publish-version --function-name ${FUNCTION_NAME} --region ${AWS_REGION} --query 'Version' --output text)
-                    echo "New Lambda Version: $LAMBDA_VERSION"
-                    echo "LAMBDA_VERSION=$LAMBDA_VERSION" >> $GITHUB_ENV
+                    ${AWS_CLI} lambda update-function-code --function-name ${FUNCTION_NAME} --zip-file fileb://function.zip --region ${AWS_REGION}
                     '''
                 }
             }
         }
 
-        stage('Update Alias to Latest Version') {
+        stage('Update Lambda Configuration') {
             steps {
                 script {
                     sh '''
-                    ALIAS_NAME="prod-${TIMESTAMP}"  # Create recognizable alias name
-                    echo "Using alias: $ALIAS_NAME"
+                    LAYER_VERSION=$(cat layer_version.txt)
+                    ${AWS_CLI} lambda update-function-configuration --function-name ${FUNCTION_NAME} --layers arn:aws:lambda:${AWS_REGION}:123456789012:layer:${LAYER_NAME}:$LAYER_VERSION
+                    '''
+                }
+            }
+        }
 
-                    aws lambda update-alias --function-name ${FUNCTION_NAME} --name $ALIAS_NAME --function-version $LAMBDA_VERSION --region ${AWS_REGION} || \
-                    aws lambda create-alias --function-name ${FUNCTION_NAME} --name $ALIAS_NAME --function-version $LAMBDA_VERSION --region ${AWS_REGION}
+        stage('Publish Lambda Version') {
+            steps {
+                script {
+                    sh '''
+                    VERSION=$(${AWS_CLI} lambda publish-version --function-name ${FUNCTION_NAME} --query Version --output text)
+                    echo "VERSION=$VERSION" > lambda_version.txt
+                    '''
+                }
+            }
+        }
+
+        stage('Update Alias') {
+            steps {
+                script {
+                    sh '''
+                    VERSION=$(cat lambda_version.txt)
+                    ${AWS_CLI} lambda update-alias --function-name ${FUNCTION_NAME} --name latest --function-version $VERSION
                     '''
                 }
             }
@@ -87,7 +119,7 @@ pipeline {
 
     post {
         success {
-            echo 'Deployment successful!'
+            echo 'Deployment successful! Lambda and Layer versioning completed.'
         }
         failure {
             echo 'Deployment failed!'
