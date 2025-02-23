@@ -39,28 +39,28 @@ pipeline {
             }
         }
 
-        stage('Package Lambda Layer') {
-            steps {
-                script {
-                    sh '''
-                    mkdir -p python/lib/python3.11/site-packages
-                    cp -r ${VENV_DIR}/lib/python3.11/site-packages/* python/lib/python3.11/site-packages/
-                    zip -r layer.zip python
-                    '''
-                }
-            }
-        }
+        // stage('Package Lambda Layer') {
+        //     steps {
+        //         script {
+        //             sh '''
+        //             mkdir -p python/lib/python3.11/site-packages
+        //             cp -r ${VENV_DIR}/lib/python3.11/site-packages/* python/lib/python3.11/site-packages/
+        //             zip -r layer.zip python
+        //             '''
+        //         }
+        //     }
+        // }
 
-        stage('Upload Lambda Layer') {
-            steps {
-                script {
-                    sh '''
-                    LAYER_VERSION=$(${AWS_CLI} lambda publish-layer-version --layer-name ${LAYER_NAME} --zip-file fileb://layer.zip --compatible-runtimes python3.11 --query Version --output text)
-                    echo "LAYER_VERSION=$LAYER_VERSION" > layer_version.txt
-                    '''
-                }
-            }
-        }
+        // stage('Upload Lambda Layer') {
+        //     steps {
+        //         script {
+        //             sh '''
+        //             LAYER_VERSION=$(${AWS_CLI} lambda publish-layer-version --layer-name ${LAYER_NAME} --zip-file fileb://layer.zip --compatible-runtimes python3.11 --query Version --output text)
+        //             echo "LAYER_VERSION=$LAYER_VERSION" > layer_version.txt
+        //             '''
+        //         }
+        //     }
+        // }
 
         stage('Package Lambda Function') {
             steps {
@@ -83,16 +83,16 @@ pipeline {
             }
         }
 
-        stage('Update Lambda Configuration') {
-            steps {
-                script {
-                    sh '''
-                    LAYER_VERSION=$(cat layer_version.txt)
-                    ${AWS_CLI} lambda update-function-configuration --function-name ${FUNCTION_NAME} --layers arn:aws:lambda:${AWS_REGION}:123456789012:layer:${LAYER_NAME}:$LAYER_VERSION
-                    '''
-                }
-            }
-        }
+        // stage('Update Lambda Configuration') {
+        //     steps {
+        //         script {
+        //             sh '''
+        //             LAYER_VERSION=$(cat layer_version.txt)
+        //             ${AWS_CLI} lambda update-function-configuration --function-name ${FUNCTION_NAME} --layers arn:aws:lambda:${AWS_REGION}:123456789012:layer:${LAYER_NAME}:$LAYER_VERSION
+        //             '''
+        //         }
+        //     }
+        // }
 
         stage('Publish Lambda Version') {
             steps {
